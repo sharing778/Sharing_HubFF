@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensi FF</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chat { width: 300px; height: 400px; border: 1px solid #000; overflow-y: auto; margin: auto; padding: 10px; }
+        #input { width: 250px; }
+    </style>
+</head>
+<body>
+    <h1>Sensi FF</h1>
+    <div id="chat"></div>
+    <input type="text" id="input" placeholder="Digite /sensi...">
+    <button onclick="sendMessage()">Enviar</button>
+
+    <script>
+        const chat = document.getElementById("chat");
+        const input = document.getElementById("input");
+        let step = 0;
+        let model = "", dpi = "", sensi = "";
+
+        function sendMessage() {
+            let text = input.value;
+            if (!text) return;
+            chat.innerHTML += `<p><strong>Você:</strong> ${text}</p>`;
+            input.value = "";
+            processMessage(text);
+        }
+
+        function processMessage(text) {
+            if (step === 0 && text === "/sensi") {
+                setTimeout(() => chat.innerHTML += `<p><strong>IA:</strong> Qual é o modelo do seu celular?</p>`, 500);
+                step++;
+            } else if (step === 1) {
+                model = text;
+                setTimeout(() => chat.innerHTML += `<p><strong>IA:</strong> Você quer gerar uma velocidade do ponteiro? (sim/não)</p>`, 500);
+                step++;
+            } else if (step === 2) {
+                if (text.toLowerCase() === "sim") {
+                    chat.innerHTML += `<p><strong>IA:</strong> Gerando velocidade do ponteiro para ${model}...</p>`;
+                    step++;
+                } else {
+                    setTimeout(() => chat.innerHTML += `<p><strong>IA:</strong> Qual modelo de DPI você quer?</p>`, 500);
+                    step++;
+                }
+            } else if (step === 3) {
+                dpi = text;
+                setTimeout(() => chat.innerHTML += `<p><strong>IA:</strong> Escolha um nível de sensibilidade: Baixa, Média, Alta, Super Alta.</p>`, 500);
+                step++;
+            } else if (step === 4) {
+                sensi = text.toLowerCase();
+                let result = generateSensi(model, dpi, sensi);
+                chat.innerHTML += `<p><strong>IA:</strong> Configuração recomendada: ${result}</p>`;
+                step = 0;
+            }
+        }
+
+        function generateSensi(model, dpi, sensi) {
+            let base = { baixa: 20, media: 40, alta: 60, "super alta": 80 };
+            return `Celular: ${model}, DPI: ${dpi}, Sensibilidade: ${base[sensi]}%`;
+        }
+    </script>
+</body>
+</html>
